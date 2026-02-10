@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Movie Search App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0b061edb;
+      color: white;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .search-box {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 300px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #e50914;
+      color: white;
+      border: none;
+    }
+
+    .movies {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .movie {
+      background: #1e1e1e;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .movie img {
+      width: 100%;
+      height: 320px;
+      object-fit: cover;
+    }
+
+    .movie-content {
+      padding: 10px;
+    }
+
+    .movie-content h3 {
+      margin: 5px 0;
+    }
+
+    .movie-content p {
+      font-size: 14px;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎬 Movie / TV Show Search</h1>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search movie or show">
+    <button type="submit" onclick="searchShows()">Search</button>
+  </div>
+
+  <div class="movies" id="movies"></div>
+
+  <script>
+    async function searchShows() {
+      const query = document.getElementById("searchInput").value;
+      const moviesDiv = document.getElementById("movies");
+
+      moviesDiv.innerHTML = "";
+
+      if (query === "") {
+        alert("Please enter a search term");
+        return;
+      }
+
+      const url = `https://api.tvmaze.com/search/shows?q=${query}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        data.forEach(item => {
+          const show = item.show;
+
+          const movieDiv = document.createElement("div");
+          movieDiv.classList.add("movie");
+
+          movieDiv.innerHTML = `
+            <img src="${show.image ? show.image.medium : 'https://via.placeholder.com/210x295'}">
+            <div class="movie-content">
+              <h3>${show.name}</h3>
+              <p><strong>Rating:</strong> ${show.rating.average || "N/A"}</p>
+              <p><strong>Genres:</strong> ${show.genres.join(", ") || "N/A"}</p>
+            </div>
+          `;
+
+          moviesDiv.appendChild(movieDiv);
+        });
+
+      } catch (error) {
+        alert("Failed to fetch data");
+      }
+    }
+  </script>
+
+</body>
+</html>
